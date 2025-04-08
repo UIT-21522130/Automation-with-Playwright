@@ -13,6 +13,9 @@ test('Register page', async ({ page }) => {
     // Multi select dropdown
     await page.locator("#interests").selectOption(["sports", "science", "technology"]); // multiple
     await page.locator("#country").selectOption({ label: 'Australia' }); // single
+    const options = await page.locator("#interests option")
+    await expect(options).toHaveCount(5)
+    await page.locator("#interests").selectOption(["sports", "science", "technology"]);
     // date picker
     await page.locator('#dob').fill('2000-01-01');
     // upload file
