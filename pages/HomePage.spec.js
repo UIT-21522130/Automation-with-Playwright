@@ -1,23 +1,28 @@
-const {test, expect} = require('@playwright/test')
-test('Register page', async ({page}) => {
-    await page.goto('https://f1gen-shoes.myharavan.com/');
-    const payTitle = await page.title();
-    console.log('The title is:', payTitle);
-
-    await page.locator("body > header > div > div.header-mid > div.header-mid-nav > button:nth-child(1)").click()
-    await page.locator("#modalRegisterTab").click()
-
-    await page.locator("#register-last-name").fill('Dang')
-    await page.locator("#register-first-name").fill('Duy')
-    await page.locator("#register-phone").fill('0987311312')
-    await page.check("#register-gender-1")
-    await expect(page.locator("#register-gender-1")).toBeChecked();
-    await page.locator("#register-email").fill('buithihuongkc2003@gmail.com')
-    await page.locator("#register-password").fill('12345')
-    await page.locator("#aregister-confirm-password").fill('12345')
-
-
-    await page.locator("#create_customer > div:nth-child(11) > button").click()
-
-    await page.close(); 
-})
+exports.HomePage =
+    class HomePage {
+        constructor(page) {
+            this.page = page
+            this.productList = "//*[@id='tbodyid']/div/div/div/h4/a"
+            this.addToCartButton = "//a[normalize-space()='Add to cart']"
+            this.passwordInput = "#loginpassword"
+            this.cart = "#cartur"
+        }
+        async addProductToCart(productName) {
+            const productList = await this.page.$$(this.productList)
+            for (const product of productList) {
+                if (productName == await product.textContent()) {
+                    await product.click();
+                    break;
+                }
+            }
+            await this.page.on('dialog', async dialog => {
+                if (dialog.message().includes('added')) {
+                    await dialog.accept()
+                }
+            })
+            await this.page.locator(this.addToCartButton).click()
+        }
+        async gotoCart() {
+            await this.page.locator(this.cart).click()
+        }
+    }
